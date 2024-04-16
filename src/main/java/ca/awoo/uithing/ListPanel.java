@@ -26,12 +26,13 @@ public class ListPanel<Model> extends JPanel {
                 for(Pair<Model, Component> entry : oldComponents){
                     System.out.println("Currently here: " + entry);
                 }
+                removeAll();
                 for (Model model : models) {
                     Optional<Pair<Model, Component>> entry = oldComponents.stream().filter(e -> equals.test(e.first(), model)).findFirst();
                     if (entry.isPresent()) {
                         System.out.println("Preserving old component: " + model + ", " + entry);
                         newComponents.add(entry.get());
-                        oldComponents.remove(entry.get());
+                        add(entry.get().second());
                     } else {
                         System.out.println("Creating new component: " + model);
                         Component component = componentFactory.apply(model);
@@ -39,12 +40,9 @@ public class ListPanel<Model> extends JPanel {
                         add(component);
                     }
                 }
-                for (Pair<Model, Component> entry : oldComponents) {
-                    System.out.println("Removing old component: " + entry);
-                    remove(entry.second());
-                }
                 components = newComponents;
                 revalidate();
+                repaint();
             });
         });
     }
