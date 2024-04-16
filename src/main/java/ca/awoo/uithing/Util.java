@@ -13,4 +13,8 @@ public class Util {
     public static Pair<Component, Object> component(Component component, Object constraints) {
         return new Pair<>(component, constraints);
     }
+
+    public static Pair<Component, Object> component(Component component) {
+        return new Pair<>(component, null);
+    }
 }

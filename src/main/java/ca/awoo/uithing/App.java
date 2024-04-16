@@ -122,18 +122,24 @@ public class App {
                         todos.add(new TodoItem(textField.getText()));
                         textField.setText("");
                     });
-                    return new Component[] {
-                        textField,
-                        button
-                    };
+                    return components(
+                        component(textField),
+                        component(button)
+                    );
                 }), BorderLayout.NORTH),
                 component(new ListPanel<>(panel -> new BoxLayout(panel, BoxLayout.Y_AXIS), todos, todo -> {
                     Observable<Boolean> done = Observable.of(todo.isDone());
                     done.addObserver(todo::setDone);
-                    return new CheckBox(todo.getText(), done);
+                    Button delete = new Button("Delete", () -> todos.remove(todo));
+                    return new Panel(p -> new BoxLayout(p, BoxLayout.X_AXIS), () ->
+                        components(
+                            component(new CheckBox(todo.getText(), done), BorderLayout.CENTER),
+                            component(delete, BorderLayout.EAST)
+                        ));
                 }), BorderLayout.CENTER)
             );
         });
+        frame.setSize(frame.getWidth(), 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

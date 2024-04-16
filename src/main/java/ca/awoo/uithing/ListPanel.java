@@ -2,10 +2,10 @@ package ca.awoo.uithing;
 
 import java.awt.Component;
 import java.awt.LayoutManager;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -13,35 +13,35 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class ListPanel<Model> extends JPanel {
-    private Map<Model, Component> components;
+    private Set<Pair<Model, Component>> components;
 
     public ListPanel(Observable<List<Model>> list, BiPredicate<Model, Model> equals, Function<Model, Component> componentFactory) {
         super();
-        components = new HashMap<>();
+        components = new HashSet<>();
         list.addObserver(models -> {
             SwingUtilities.invokeLater(() -> {
                 System.out.println("ListPanel update");
-                Map<Model, Component> oldComponents = components;
-                Map<Model, Component> newComponents = new HashMap<>();
-                for(Map.Entry<Model, Component> entry : oldComponents.entrySet()){
-                    System.out.println("Currently here: " + entry.getKey() + " " + entry.getValue() + " " + entry.getValue().getName());
+                Set<Pair<Model, Component>> oldComponents = components;
+                Set<Pair<Model, Component>> newComponents = new HashSet<>();
+                for(Pair<Model, Component> entry : oldComponents){
+                    System.out.println("Currently here: " + entry);
                 }
                 for (Model model : models) {
-                    Optional<Map.Entry<Model, Component>> entry = oldComponents.entrySet().stream().filter(e -> equals.test(e.getKey(), model)).findFirst();
+                    Optional<Pair<Model, Component>> entry = oldComponents.stream().filter(e -> equals.test(e.first(), model)).findFirst();
                     if (entry.isPresent()) {
-                        System.out.println("Preserving old component: " + model + " " + entry.get().getValue() + " " + entry.get().getValue().getName());
-                        newComponents.put(model, entry.get().getValue());
-                        oldComponents.remove(entry.get().getKey());
+                        System.out.println("Preserving old component: " + model + ", " + entry);
+                        newComponents.add(entry.get());
+                        oldComponents.remove(entry.get());
                     } else {
                         System.out.println("Creating new component: " + model);
                         Component component = componentFactory.apply(model);
-                        newComponents.put(model, component);
+                        newComponents.add(Pair.of(model, component));
                         add(component);
                     }
                 }
-                for (Map.Entry<Model, Component> entry : oldComponents.entrySet()) {
-                    System.out.println("Removing old component: " + entry.getKey() + " " + entry.getValue() + " " + entry.getValue().getName());
-                    remove(entry.getValue());
+                for (Pair<Model, Component> entry : oldComponents) {
+                    System.out.println("Removing old component: " + entry);
+                    remove(entry.second());
                 }
                 components = newComponents;
                 revalidate();
