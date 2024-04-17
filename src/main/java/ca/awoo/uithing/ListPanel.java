@@ -20,21 +20,15 @@ public class ListPanel<Model> extends JPanel {
         components = new HashSet<>();
         list.addObserver(models -> {
             SwingUtilities.invokeLater(() -> {
-                System.out.println("ListPanel update");
                 Set<Pair<Model, Component>> oldComponents = components;
                 Set<Pair<Model, Component>> newComponents = new HashSet<>();
-                for(Pair<Model, Component> entry : oldComponents){
-                    System.out.println("Currently here: " + entry);
-                }
                 removeAll();
                 for (Model model : models) {
                     Optional<Pair<Model, Component>> entry = oldComponents.stream().filter(e -> equals.test(e.first(), model)).findFirst();
                     if (entry.isPresent()) {
-                        System.out.println("Preserving old component: " + model + ", " + entry);
                         newComponents.add(entry.get());
                         add(entry.get().second());
                     } else {
-                        System.out.println("Creating new component: " + model);
                         Component component = componentFactory.apply(model);
                         newComponents.add(Pair.of(model, component));
                         add(component);

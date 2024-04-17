@@ -1,7 +1,6 @@
 package ca.awoo.uithing;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -118,7 +117,6 @@ public class App {
                     preferDimension.width = 200;
                     textField.setPreferredSize(preferDimension);
                     Button button = new Button("Add", () -> {
-                        //todos.change(l -> {l.add(new TodoItem(textField.getText())); return l;});
                         todos.add(new TodoItem(textField.getText()));
                         textField.setText("");
                     });
