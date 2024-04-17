@@ -103,6 +103,38 @@ public class App {
         
     }
     public static void main(String[] args) {
+        menu().setVisible(true);
+    }
+
+    private static Frame menu(){
+        Frame todo = todoApp();
+        Frame counter = counterApp();
+        Frame menu = new Frame(f -> new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS), Observable.of("Examples"), () -> 
+            components(
+                component(new Button("Todo app", () -> {
+                    todo.setVisible(true);
+                })),
+                component(new Button("Counter app", () -> {
+                    counter.setVisible(true);
+                }))
+            )
+        );
+        menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        return menu;
+    }
+
+    private static Frame counterApp(){
+        Observable<Integer> count = Observable.of(0);
+        Frame frame = new Frame(new BorderLayout(), Observable.of("Counter app"), () ->
+            components(
+                component(new Button("Increment", () -> count.change(i -> i + 1)), BorderLayout.NORTH),
+                component(new Label(count.map(i -> "Clicked " + i + " times")), BorderLayout.CENTER)
+            )
+        );
+        return frame;
+    }
+
+    private static Frame todoApp(){
         Observable<String> title = Observable.of("Todo app");
         Frame frame = new Frame(new BorderLayout(), title, () -> {
             ObservableList<TodoItem, TodoItem> todos = Observable.ofList(new ArrayList<TodoItem>());
@@ -138,7 +170,6 @@ public class App {
             );
         });
         frame.setSize(frame.getWidth(), 200);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        return frame;
     }
 }
